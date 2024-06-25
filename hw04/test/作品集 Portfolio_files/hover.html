@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<!-- saved from url=(0051)https://glennwang.github.io/ct2024s/hw06/hover.html -->
+<html lang="zh-Hant"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <title>D3.js 散點圖</title>
+    <script src="./d3.v5.min.js.下載"></script>
+    <style>
+        #tooltip {
+            position: absolute;
+            text-align: center;
+            width: 128px;
+            height: 128px;
+            padding: 2px;
+            font: 12px sans-serif;
+            background: white;
+            border: 0px;
+            border-radius: 8px;
+            pointer-events: none;
+            opacity: 0;
+        }
+    </style>
+</head>
+<body>
+    <img src="./109590003.png" height="150" width="150">
+    <script>
+        // 設定SVG大小
+        var margin = {top: 10, right: 30, bottom: 30, left: 60},
+            width = 860 - margin.left - margin.right,
+            height = 460 - margin.top - margin.bottom;
+
+        // 添加SVG到body
+        var svg = d3.select("body").append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+        // 載入CSV資料
+        d3.csv("src/upload_csv/wang.csv").then(function(data) {
+
+            // 設置x軸比例尺
+            var x = d3.scaleLinear()
+                .domain([0.84, 0.90]) // ssim
+                .range([ 0, width ]);
+            svg.append("g")
+                .attr("transform", "translate(0," + height + ")")
+                .call(d3.axisBottom(x));
+
+            svg.append("g")
+                .attr("transform", "translate(0," + height + ")")
+                .call(d3.axisBottom(x))
+            // 添加X軸標籤
+            .append("text")
+                .attr("class", "axis-label")
+                .attr("x", width) // 將標籤放置在軸的末端
+                .attr("y", -20) // 在X軸線下方一點的位置
+                .style("text-anchor", "end") // 文本對齊方式
+                .text("SSIM");
+
+            // 設置y軸比例尺
+            var y = d3.scaleLinear()
+                .domain([0.45, 0.53]) // lpips
+                .range([ height, 0]);
+            svg.append("g")
+                .call(d3.axisLeft(y));
+
+            // 添加Y軸以及標籤
+            svg.append("g")
+                .call(d3.axisLeft(y))
+            // 添加Y軸標籤
+            .append("text")
+                .attr("class", "axis-label")
+                .attr("transform", "rotate(-90)") // 旋轉標籤
+                .attr("y", 30) // 在Y軸線左方一點的位置
+                .attr("dy", ".71em") // 微調位置
+                .style("text-anchor", "end") // 文本對齊方式
+                .text("LPIPS");
+
+            var filteredData = data.filter(function(d) {
+                return d.SSIM >= 0.84 && d.SSIM <= 0.90 && d.LPIPS >= 0.45 && d.LPIPS <= 0.53;
+            });
+
+            // 創建散點
+            svg.append('g')
+                .selectAll("dot")
+                .data(filteredData)
+                .enter()
+                .append("circle")
+                  .attr("cx", function (d) { return x(d.SSIM); } )
+                  .attr("cy", function (d) { return y(d.LPIPS); } )
+                  .attr("r", 6)
+                  .style("fill", "#69b3a2")
+
+            // 創建工具提示
+            var tooltip = d3.select("body").append("div")
+                .attr("id", "tooltip")
+                .style("opacity", 0);
+
+
+            svg.selectAll("circle")
+                .on("mouseover", function(d) {
+                    tooltip.transition()
+                        .duration(200)
+                        .style("opacity", .9);
+                    tooltip.html("<img src='src/wang/" + d.Student + "' alt='Handwriting' width='120' height='120'>")
+                        .style("left", (d3.event.pageX) + "px")
+                        .style("top", (d3.event.pageY - 28) + "px");
+                })
+                .on("mouseout", function(d) {
+                    tooltip.transition()
+                        .duration(500)
+                        .style("opacity", 0);
+                });
+        });
+
+    </script><svg width="860" height="460"><g transform="translate(60,10)"><g transform="translate(0,420)" fill="none" font-size="10" font-family="sans-serif" text-anchor="middle"><path class="domain" stroke="currentColor" d="M0.5,6V0.5H770.5V6"></path><g class="tick" opacity="1" transform="translate(0.5,0)"><line stroke="currentColor" y2="6"></line><text fill="currentColor" y="9" dy="0.71em">0.840</text></g><g class="tick" opacity="1" transform="translate(64.66666666666666,0)"><line stroke="currentColor" y2="6"></line><text fill="currentColor" y="9" dy="0.71em">0.845</text></g><g class="tick" opacity="1" transform="translate(128.83333333333331,0)"><line stroke="currentColor" y2="6"></line><text fill="currentColor" y="9" dy="0.71em">0.850</text></g><g class="tick" opacity="1" transform="translate(193,0)"><line stroke="currentColor" y2="6"></line><text fill="currentColor" y="9" dy="0.71em">0.855</text></g><g class="tick" opacity="1" transform="translate(257.16666666666663,0)"><line stroke="currentColor" y2="6"></line><text fill="currentColor" y="9" dy="0.71em">0.860</text></g><g class="tick" opacity="1" transform="translate(321.33333333333337,0)"><line stroke="currentColor" y2="6"></line><text fill="currentColor" y="9" dy="0.71em">0.865</text></g><g class="tick" opacity="1" transform="translate(385.5,0)"><line stroke="currentColor" y2="6"></line><text fill="currentColor" y="9" dy="0.71em">0.870</text></g><g class="tick" opacity="1" transform="translate(449.6666666666667,0)"><line stroke="currentColor" y2="6"></line><text fill="currentColor" y="9" dy="0.71em">0.875</text></g><g class="tick" opacity="1" transform="translate(513.8333333333333,0)"><line stroke="currentColor" y2="6"></line><text fill="currentColor" y="9" dy="0.71em">0.880</text></g><g class="tick" opacity="1" transform="translate(578,0)"><line stroke="currentColor" y2="6"></line><text fill="currentColor" y="9" dy="0.71em">0.885</text></g><g class="tick" opacity="1" transform="translate(642.1666666666667,0)"><line stroke="currentColor" y2="6"></line><text fill="currentColor" y="9" dy="0.71em">0.890</text></g><g class="tick" opacity="1" transform="translate(706.3333333333333,0)"><line stroke="currentColor" y2="6"></line><text fill="currentColor" y="9" dy="0.71em">0.895</text></g><g class="tick" opacity="1" transform="translate(770.5,0)"><line stroke="currentColor" y2="6"></line><text fill="currentColor" y="9" dy="0.71em">0.900</text></g></g><g transform="translate(0,420)" fill="none" font-size="10" font-family="sans-serif" text-anchor="middle"><path class="domain" stroke="currentColor" d="M0.5,6V0.5H770.5V6"></path><g class="tick" opacity="1" transform="translate(0.5,0)"><line stroke="currentColor" y2="6"></line><text fill="currentColor" y="9" dy="0.71em">0.840</text></g><g class="tick" opacity="1" transform="translate(64.66666666666666,0)"><line stroke="currentColor" y2="6"></line><text fill="currentColor" y="9" dy="0.71em">0.845</text></g><g class="tick" opacity="1" transform="translate(128.83333333333331,0)"><line stroke="currentColor" y2="6"></line><text fill="currentColor" y="9" dy="0.71em">0.850</text></g><g class="tick" opacity="1" transform="translate(193,0)"><line stroke="currentColor" y2="6"></line><text fill="currentColor" y="9" dy="0.71em">0.855</text></g><g class="tick" opacity="1" transform="translate(257.16666666666663,0)"><line stroke="currentColor" y2="6"></line><text fill="currentColor" y="9" dy="0.71em">0.860</text></g><g class="tick" opacity="1" transform="translate(321.33333333333337,0)"><line stroke="currentColor" y2="6"></line><text fill="currentColor" y="9" dy="0.71em">0.865</text></g><g class="tick" opacity="1" transform="translate(385.5,0)"><line stroke="currentColor" y2="6"></line><text fill="currentColor" y="9" dy="0.71em">0.870</text></g><g class="tick" opacity="1" transform="translate(449.6666666666667,0)"><line stroke="currentColor" y2="6"></line><text fill="currentColor" y="9" dy="0.71em">0.875</text></g><g class="tick" opacity="1" transform="translate(513.8333333333333,0)"><line stroke="currentColor" y2="6"></line><text fill="currentColor" y="9" dy="0.71em">0.880</text></g><g class="tick" opacity="1" transform="translate(578,0)"><line stroke="currentColor" y2="6"></line><text fill="currentColor" y="9" dy="0.71em">0.885</text></g><g class="tick" opacity="1" transform="translate(642.1666666666667,0)"><line stroke="currentColor" y2="6"></line><text fill="currentColor" y="9" dy="0.71em">0.890</text></g><g class="tick" opacity="1" transform="translate(706.3333333333333,0)"><line stroke="currentColor" y2="6"></line><text fill="currentColor" y="9" dy="0.71em">0.895</text></g><g class="tick" opacity="1" transform="translate(770.5,0)"><line stroke="currentColor" y2="6"></line><text fill="currentColor" y="9" dy="0.71em">0.900</text></g><text class="axis-label" x="770" y="-20" style="text-anchor: end;">SSIM</text></g><g fill="none" font-size="10" font-family="sans-serif" text-anchor="end"><path class="domain" stroke="currentColor" d="M-6,420.5H0.5V0.5H-6"></path><g class="tick" opacity="1" transform="translate(0,420.5)"><line stroke="currentColor" x2="-6"></line><text fill="currentColor" x="-9" dy="0.32em">0.45</text></g><g class="tick" opacity="1" transform="translate(0,367.99999999999994)"><line stroke="currentColor" x2="-6"></line><text fill="currentColor" x="-9" dy="0.32em">0.46</text></g><g class="tick" opacity="1" transform="translate(0,315.5000000000002)"><line stroke="currentColor" x2="-6"></line><text fill="currentColor" x="-9" dy="0.32em">0.47</text></g><g class="tick" opacity="1" transform="translate(0,263.00000000000017)"><line stroke="currentColor" x2="-6"></line><text fill="currentColor" x="-9" dy="0.32em">0.48</text></g><g class="tick" opacity="1" transform="translate(0,210.50000000000014)"><line stroke="currentColor" x2="-6"></line><text fill="currentColor" x="-9" dy="0.32em">0.49</text></g><g class="tick" opacity="1" transform="translate(0,158.00000000000009)"><line stroke="currentColor" x2="-6"></line><text fill="currentColor" x="-9" dy="0.32em">0.50</text></g><g class="tick" opacity="1" transform="translate(0,105.5000000000001)"><line stroke="currentColor" x2="-6"></line><text fill="currentColor" x="-9" dy="0.32em">0.51</text></g><g class="tick" opacity="1" transform="translate(0,53.00000000000005)"><line stroke="currentColor" x2="-6"></line><text fill="currentColor" x="-9" dy="0.32em">0.52</text></g><g class="tick" opacity="1" transform="translate(0,0.5)"><line stroke="currentColor" x2="-6"></line><text fill="currentColor" x="-9" dy="0.32em">0.53</text></g></g><g fill="none" font-size="10" font-family="sans-serif" text-anchor="end"><path class="domain" stroke="currentColor" d="M-6,420.5H0.5V0.5H-6"></path><g class="tick" opacity="1" transform="translate(0,420.5)"><line stroke="currentColor" x2="-6"></line><text fill="currentColor" x="-9" dy="0.32em">0.45</text></g><g class="tick" opacity="1" transform="translate(0,367.99999999999994)"><line stroke="currentColor" x2="-6"></line><text fill="currentColor" x="-9" dy="0.32em">0.46</text></g><g class="tick" opacity="1" transform="translate(0,315.5000000000002)"><line stroke="currentColor" x2="-6"></line><text fill="currentColor" x="-9" dy="0.32em">0.47</text></g><g class="tick" opacity="1" transform="translate(0,263.00000000000017)"><line stroke="currentColor" x2="-6"></line><text fill="currentColor" x="-9" dy="0.32em">0.48</text></g><g class="tick" opacity="1" transform="translate(0,210.50000000000014)"><line stroke="currentColor" x2="-6"></line><text fill="currentColor" x="-9" dy="0.32em">0.49</text></g><g class="tick" opacity="1" transform="translate(0,158.00000000000009)"><line stroke="currentColor" x2="-6"></line><text fill="currentColor" x="-9" dy="0.32em">0.50</text></g><g class="tick" opacity="1" transform="translate(0,105.5000000000001)"><line stroke="currentColor" x2="-6"></line><text fill="currentColor" x="-9" dy="0.32em">0.51</text></g><g class="tick" opacity="1" transform="translate(0,53.00000000000005)"><line stroke="currentColor" x2="-6"></line><text fill="currentColor" x="-9" dy="0.32em">0.52</text></g><g class="tick" opacity="1" transform="translate(0,0.5)"><line stroke="currentColor" x2="-6"></line><text fill="currentColor" x="-9" dy="0.32em">0.53</text></g><text class="axis-label" transform="rotate(-90)" y="30" dy=".71em" style="text-anchor: end;">LPIPS</text></g><g><circle cx="458.5847015924784" cy="360.9077346324922" r="6" style="fill: rgb(105, 179, 162);"></circle><circle cx="327.2526413980865" cy="230.3054568171502" r="6" style="fill: rgb(105, 179, 162);"></circle><circle cx="507.2703879386931" cy="220.914752483368" r="6" style="fill: rgb(105, 179, 162);"></circle><circle cx="195.64386223696516" cy="208.32204937934884" r="6" style="fill: rgb(105, 179, 162);"></circle><circle cx="45.94319395562542" cy="146.04508996009835" r="6" style="fill: rgb(105, 179, 162);"></circle><circle cx="680.295106977445" cy="105.44596731662764" r="6" style="fill: rgb(105, 179, 162);"></circle></g></g></svg>
+
+
+
+<style>
+    .axis-label {
+    fill: #000; /* 文本顏色 */
+    font-size: 12px; /* 文本大小 */
+    font-family: sans-serif; /* 文本字體 */
+}
+</style><div id="tooltip" style="opacity: 0; left: 266px; top: 141px;"><img src="./107590028.png" alt="Handwriting" width="120" height="120"></div></body></html>
